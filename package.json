@@ -1,0 +1,25 @@
+{
+  "name": "redux-persist-encrypted-async-storage",
+  "version": "1.0.0",
+  "description": "Storage engine to provide encryption layer over async storage",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chaudhryjunaid/redux-persist-encrypted-async-storage.git"
+  },
+  "keywords": [
+    "react-native-keychain",
+    "redux-persist",
+    "asyncstorage",
+    "encryption"
+  ],
+  "author": "Chaudhry Junaid Anwar",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chaudhryjunaid/redux-persist-encrypted-async-storage/issues"
+  },
+  "homepage": "https://github.com/chaudhryjunaid/redux-persist-encrypted-async-storage#readme"
+}
