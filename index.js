@@ -1,16 +1,48 @@
 import { AsyncStorage } from 'react-native';
 import * as Keychain from 'react-native-keychain';
+import CryptoJSCore from 'crypto-js/core';
+import AES from 'crypto-js/aes';
 
-export default ({keyName = 'redux-persist-encrypted-async-storage:key'} = {}) => {
+import uuidv4 from 'uuid/v4';
+
+let encryptionKey = null;
+export default ({ service = 'com.redux-persist-encrypted-async-storage' } = {}) => {
   const noop = () => null;
+
+  const getEncryptionKey = async () => {
+    if (encryptionKey == null) {
+      console.log('Encryption key is null; asking keystore...');
+      let { password: encryptionKeyValue } = await Keychain.getGenericPassword({ service });
+      if (!encryptionKeyValue) {
+        console.log('Encryption key is null; generating key...');
+        encryptionKeyValue = uuidv4();
+        await Keychain.setGenericPassword('data', encryptionKeyValue, {
+          service,
+          accessible: Keychain.ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
+        });
+      }
+      encryptionKey = encryptionKeyValue;
+    }
+
+    console.log(`** Encryption key: ${encryptionKey}`);
+    return encryptionKey;
+  };
 
   return {
     async getItem(key, callback = noop) {
       try {
-        let result = await AsyncStorage.getItem(key);
-
-        callback(null, result);
-        return result;
+        let decryptedString;
+        const encryptedValue = await AsyncStorage.getItem(key);
+        try {
+          const secretKey = await getEncryptionKey();
+          const bytes = AES.decrypt(encryptedValue, secretKey);
+          decryptedString = bytes.toString(CryptoJSCore.enc.Utf8);
+        } catch (err) {
+          throw new Error(`Could not decrypt state: ${err.message}`);
+        }
+        console.log(`** Decryption: ${key} = ${encryptedValue} : ${decryptedString}`);
+        callback(null, decryptedString);
+        return decryptedString;
       } catch (error) {
         callback(error);
         throw error;
@@ -19,7 +51,13 @@ export default ({keyName = 'redux-persist-encrypted-async-storage:key'} = {}) =>
 
     async setItem(key, value, callback = noop) {
       try {
-        await AsyncStorage.setItem(key, value);
+        let encryptedValue = value;
+        if (value) {
+          const secretKey = await getEncryptionKey();
+          encryptedValue = AES.encrypt(value, secretKey).toString();
+        }
+        await AsyncStorage.setItem(key, encryptedValue);
+        console.log(`** Encryption: ${key} = ${value} : ${encryptedValue}`);
         callback(null);
       } catch (error) {
         callback(error);
