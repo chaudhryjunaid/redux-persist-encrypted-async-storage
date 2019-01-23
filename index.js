@@ -11,10 +11,8 @@ export default ({ service = 'com.redux-persist-encrypted-async-storage' } = {}) 
 
   const getEncryptionKey = async () => {
     if (encryptionKey == null) {
-      console.log('Encryption key is null; asking keystore...');
       let { password: encryptionKeyValue } = await Keychain.getGenericPassword({ service });
       if (!encryptionKeyValue) {
-        console.log('Encryption key is null; generating key...');
         encryptionKeyValue = uuidv4();
         await Keychain.setGenericPassword('data', encryptionKeyValue, {
           service,
@@ -24,7 +22,6 @@ export default ({ service = 'com.redux-persist-encrypted-async-storage' } = {}) 
       encryptionKey = encryptionKeyValue;
     }
 
-    console.log(`** Encryption key: ${encryptionKey}`);
     return encryptionKey;
   };
 
@@ -40,7 +37,6 @@ export default ({ service = 'com.redux-persist-encrypted-async-storage' } = {}) 
         } catch (err) {
           throw new Error(`Could not decrypt state: ${err.message}`);
         }
-        console.log(`** Decryption: ${key} = ${encryptedValue} : ${decryptedString}`);
         callback(null, decryptedString);
         return decryptedString;
       } catch (error) {
@@ -57,7 +53,6 @@ export default ({ service = 'com.redux-persist-encrypted-async-storage' } = {}) 
           encryptedValue = AES.encrypt(value, secretKey).toString();
         }
         await AsyncStorage.setItem(key, encryptedValue);
-        console.log(`** Encryption: ${key} = ${value} : ${encryptedValue}`);
         callback(null);
       } catch (error) {
         callback(error);
