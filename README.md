@@ -5,6 +5,8 @@ Redux persist storage engine that provides an encryption layer over async storag
 This project provides an AES encryption layer (using a randomly generated secure key stored in keychain/keystore) over AsyncStorage for react-native projects
 
 ### To install in your project:
+First install `react-native-keychain`. Then:
+
 ```
   yarn add 'https://github.com/chaudhryjunaid/redux-persist-encrypted-async-storage.git#master'
 ```
