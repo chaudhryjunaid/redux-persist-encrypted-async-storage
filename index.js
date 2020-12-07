@@ -1,4 +1,4 @@
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Keychain from 'react-native-keychain';
 import CryptoJSCore from 'crypto-js/core';
 import AES from 'crypto-js/aes';
