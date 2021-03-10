@@ -30,6 +30,7 @@
     "eslint-plugin-react": "^7.12.4"
   },
   "peerDependencies": {
+    "@react-native-async-storage/async-storage": "*",
     "react-native": "*",
     "react-native-keychain": "*"
   },
